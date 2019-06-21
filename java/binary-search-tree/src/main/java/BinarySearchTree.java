@@ -1,5 +1,4 @@
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 class BinarySearchTree<T extends Comparable<T>> {
 
@@ -13,26 +12,63 @@ class BinarySearchTree<T extends Comparable<T>> {
         }
     }
 
-    //What if we just made one big git repo for all of your exercism stuff?
-    //sure
-    //It'll make it way easier each time we do a new exercise
-
 
     List<T> getAsSortedList() {
-        throw new UnsupportedOperationException("Delete this statement and write your own implementation.");
+        //Reccomend looking at a recursive solution
+        List<T> returnedList = new ArrayList<>();
+        Stack<Node<T>> stack = new Stack<>();
+
+        stack.push(root);
+
+        Node<T> current = root;
+
+        while (!stack.empty()) {
+            while (current != null) {
+                current = current.visitLeft(stack);
+            }
+
+            current = stack.pop();
+
+            returnedList.add(current.getData());
+
+            current = current.visitRight(stack);
+        }
+
+        return returnedList;
     }
 
+
     List<T> getAsLevelOrderList() {
-        return Collections.emptyList();
+        List<T> returnedList = new ArrayList<>();
+        Queue<Node<T>> queue = new LinkedList<>();
+
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            Node<T> element = queue.poll();
+
+            returnedList.add(element.getData());
+
+            if (element.getLeft() != null) {
+                queue.add(element.getLeft());
+            }
+
+            if (element.right != null) {
+                queue.add(element.getRight());
+            }
+        }
+
+
+        return returnedList;
     }
 
     Node<T> getRoot() {
         return root;
-
     }
 
     static class Node<T extends Comparable<T>> {
         private T data;
+
         private Node<T> left;
         private Node<T> right;
 
@@ -48,25 +84,42 @@ class BinarySearchTree<T extends Comparable<T>> {
             return right;
         }
 
+
         T getData() {
             return data;
         }
 
-        void insert(T insert) {
-            if (this.getData().compareTo(insert) >= 0) {
-                left = new Node<>(insert);
-            } else {
-                right = new Node<>(insert);
+
+        private Node<T> visitLeft(Stack<Node<T>> stack) {
+            if (left != null) {
+                stack.push(left);
             }
+
+            return left;
         }
 
+        private Node<T> visitRight(Stack<Node<T>> stack) {
+            if (right != null) {
+                stack.push(right);
+            }
 
-        private void insertNode(T value) {
-            Node<T> node = new Node<>(value);
+            return right;
+        }
 
-
-            //make new node
-            //make root know that this is the left node
+        void insert(T insert) {
+            if (this.getData().compareTo(insert) >= 0) {
+                if (left == null) {
+                    left = new Node<>(insert);
+                } else {
+                    left.insert(insert);
+                }
+            } else {
+                if (right == null) {
+                    right = new Node<>(insert);
+                } else {
+                    right.insert(insert);
+                }
+            }
         }
     }
 }

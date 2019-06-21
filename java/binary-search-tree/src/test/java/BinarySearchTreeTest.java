@@ -1,22 +1,16 @@
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 
 public class BinarySearchTreeTest {
-
-    BinarySearchTree<Integer> persistentBinarySearchTree = new BinarySearchTree<>();
-
 
     @Test
     public void dataIsRetained() {
@@ -38,7 +32,6 @@ public class BinarySearchTreeTest {
     @Test
     public void rightNowRootIsOverwritten() {
         BinarySearchTree<Integer> binarySearchTree = new BinarySearchTree<>();
-
         binarySearchTree.insert(4);
         BinarySearchTree.Node<Integer> root = binarySearchTree.getRoot();
         int data = root.getData();
@@ -111,12 +104,8 @@ public class BinarySearchTreeTest {
         assertEquals(expectedRoot, actualRoot);
     }
 
-    // TODO - Add A bunch of elements to the tree
-    // TODO - return them in the same order
-    // Todo- be able to branch down the tree
-    @Ignore("Remove to run test")
     @Test
-    public void addsStuffToNodesWhenRootIsFull(){
+    public void addsStuffToNodesWhenRootIsFull() {
         BinarySearchTree<Integer> binarySearchTree = new BinarySearchTree<>();
 
         binarySearchTree.insert(4);
@@ -125,35 +114,47 @@ public class BinarySearchTreeTest {
 
         binarySearchTree.insert(1);
 
-        //      4
-        //     / \
-        //    2   6
-        //   /
-        //  1
+        BinarySearchTree.Node<Integer> root = binarySearchTree.getRoot();
+        assertThat(root.getData()).isEqualTo(4);
 
-        //      4
-        //     / \
-        //    1   6
+        BinarySearchTree.Node<Integer> firstLeft = root.getLeft();
+        assertThat(firstLeft.getData()).isEqualTo(2);
 
-
-        BinarySearchTree.Node<Integer> smallestNode = binarySearchTree.getRoot().getLeft().getLeft();
-
-        Integer data = smallestNode.getData();
-        Integer expected = 1;
-
-        assertEquals(data, expected);
+        BinarySearchTree.Node<Integer> lastLeft = firstLeft.getLeft();
+        assertThat(lastLeft.getData()).isEqualTo(1);
 
     }
-    @Ignore("Remove to run test")
+
     @Test
-    public void createsComplexTree() {
+    public void addsStuffToLargeNodesWhenRootIsFull() {
+        BinarySearchTree<Integer> binarySearchTree = new BinarySearchTree<>();
+
+        binarySearchTree.insert(4);
+        binarySearchTree.insert(2);
+        binarySearchTree.insert(6);
+
+        binarySearchTree.insert(7);
+
+        BinarySearchTree.Node<Integer> root = binarySearchTree.getRoot();
+        assertThat(root.getData()).isEqualTo(4);
+
+        BinarySearchTree.Node<Integer> firstRight = root.getRight();
+        assertThat(firstRight.getData()).isEqualTo(6);
+
+        BinarySearchTree.Node<Integer> lastRight = firstRight.getRight();
+        assertThat(lastRight.getData()).isEqualTo(7);
+
+    }
+
+    @Test
+    public void createsComplexTreeNaive() {
         BinarySearchTree<Character> binarySearchTree = new BinarySearchTree<>();
         List<Character> expected = Collections.unmodifiableList(
-            Arrays.asList('4', '2', '6', '1', '3', '5', '7')
+                Arrays.asList('4', '2', '6', '1', '3', '5', '7')
         );
 
         List<Character> treeData = Collections.unmodifiableList(
-            Arrays.asList('4', '2', '6', '1', '3', '5', '7')
+                Arrays.asList('4', '2', '6', '1', '3', '5', '7')
         );
 
         treeData.forEach(binarySearchTree::insert);
@@ -162,9 +163,44 @@ public class BinarySearchTreeTest {
         assertEquals(expected, actual);
     }
 
-    //     4
-    //    / \
-    //   3   7
+
+    @Test
+    public void createsComplexTree() {
+        BinarySearchTree<Character> binarySearchTree = new BinarySearchTree<>();
+        List<Character> expected = List.of('4', '2', '6', '1', '3', '5', '7');
+
+        binarySearchTree.insert('4');
+        binarySearchTree.insert('6');
+        binarySearchTree.insert('2');
+        binarySearchTree.insert('7');
+        binarySearchTree.insert('3');
+        binarySearchTree.insert('1');
+        binarySearchTree.insert('5');
+
+        List<Character> actual = binarySearchTree.getAsLevelOrderList();
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    public void traversesLittleTree() {
+        BinarySearchTree<Character> binarySearchTree = new BinarySearchTree<>();
+        List<Character> expected = List.of('4', '2', '6');
+
+        binarySearchTree.insert('4');
+        binarySearchTree.insert('6');
+        binarySearchTree.insert('2');
+
+        List<Character> actual = binarySearchTree.getAsLevelOrderList();
+        assertEquals(expected, actual);
+
+    }
+    //
+
+    // Retunred list ->  4, 2, 6, 1, 3, 5, 7
+
+    //Q ->
+
 
     //      4
     //     / \
@@ -172,12 +208,29 @@ public class BinarySearchTreeTest {
     //   /\   /\
     //  1  3 5  7
 
-    @Ignore("Remove to run test")
+    //      4
+    //     / \
+    //    2   6
+    //   /\   /\
+    //  1  3 5  7
+
+    //      4
+    //     / \
+    //    2   6
+    //   /    /\
+    //  1    5  7
+    //    \--/
+
+
+    // TODO - Add A bunch of elements to the tree
+    // TODO - return them in the same order
+    // TODO - be able to traver a little tree
+
     @Test
     public void sortsSingleElement() {
         BinarySearchTree<String> binarySearchTree = new BinarySearchTree<>();
         List<String> expected = Collections.unmodifiableList(
-            Collections.singletonList("2")
+                Collections.singletonList("2")
         );
 
         binarySearchTree.insert("2");
@@ -186,13 +239,10 @@ public class BinarySearchTreeTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore("Remove to run test")
     @Test
     public void sortsCollectionOfTwoIfSecondInsertedIsSmallerThanFirst() {
         BinarySearchTree<Integer> binarySearchTree = new BinarySearchTree<>();
-        List<Integer> expected = Collections.unmodifiableList(
-            Arrays.asList(1, 2)
-        );
+        List<Integer> expected = List.of(1, 2);
 
         binarySearchTree.insert(2);
         binarySearchTree.insert(1);
@@ -201,13 +251,10 @@ public class BinarySearchTreeTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore("Remove to run test")
     @Test
     public void sortsCollectionOfTwoIfSecondNumberisSameAsFirst() {
         BinarySearchTree<Character> binarySearchTree = new BinarySearchTree<>();
-        List<Character> expected = Collections.unmodifiableList(
-            Arrays.asList('2', '2')
-        );
+        List<Character> expected = List.of('2', '2');
 
         binarySearchTree.insert('2');
         binarySearchTree.insert('2');
@@ -216,13 +263,10 @@ public class BinarySearchTreeTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore("Remove to run test")
     @Test
     public void sortsCollectionOfTwoIfSecondInsertedIsBiggerThanFirst() {
         BinarySearchTree<Character> binarySearchTree = new BinarySearchTree<>();
-        List<Character> expected = Collections.unmodifiableList(
-            Arrays.asList('2', '3')
-        );
+        List<Character> expected = List.of('2', '3');
 
         binarySearchTree.insert('2');
         binarySearchTree.insert('3');
@@ -231,20 +275,28 @@ public class BinarySearchTreeTest {
         assertEquals(expected, actual);
     }
 
-    @Ignore("Remove to run test")
     @Test
     public void iteratesOverComplexTree() {
         BinarySearchTree<String> binarySearchTree = new BinarySearchTree<>();
-        List<String> expected = Collections.unmodifiableList(
-            Arrays.asList("1", "2", "3", "5", "6", "7")
-        );
 
-        List<String> treeData = Collections.unmodifiableList(
-            Arrays.asList("2", "1", "3", "6", "7", "5")
-        );
+        List<String> expected = List.of("1", "2", "3", "5", "6", "7");
+        List<String> treeData = List.of("2", "1", "3", "6", "7", "5");
+
         treeData.forEach(binarySearchTree::insert);
 
         List<String> actual = binarySearchTree.getAsSortedList();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void bigAssTree() {
+        BinarySearchTree<Integer> binarySearchTree = new BinarySearchTree<>();
+        List<Integer> expected = List.of(1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
+
+        List<Integer> treeData = List.of(12, 17, 18, 19, 16, 1, 2, 7, 8, 9, 10, 14, 15, 11, 3, 5, 20, 13, 6);
+        treeData.forEach(binarySearchTree::insert);
+
+        List<Integer> actual = binarySearchTree.getAsSortedList();
         assertEquals(expected, actual);
     }
 }
